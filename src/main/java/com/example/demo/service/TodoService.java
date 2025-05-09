@@ -27,8 +27,19 @@ public class TodoService {
         return todoRepository.findAll(sort);
     }
 
-    public List<ToDo> update(ToDo todo){
-        todoRepository.save(todo);
+    public List<ToDo> update(Long id,ToDo todo){
+
+        ToDo existingTodo = todoRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("ToDo with ID " + id + " not found.")
+        );
+
+        existingTodo.setName(todo.getName());
+        existingTodo.setDescription(todo.getDescription());
+        existingTodo.setCompleted(todo.isCompleted());
+        existingTodo.setPriority(todo.getPriority());
+
+        todoRepository.save(existingTodo);
+
         return list();
     }
 

@@ -40,4 +40,19 @@ class DemoApplicationTests {
                 .exchange()
                 .expectStatus().isBadRequest();
     }
+
+    @Test
+    void testListTodos() {
+        webTestClient.get()
+                .uri("/todos")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
+    }
+
+    @Test
+    void testUpdateSuccess(){
+
+    }
 }
