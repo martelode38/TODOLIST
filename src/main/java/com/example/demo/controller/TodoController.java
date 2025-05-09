@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entities.ToDo;
 import com.example.demo.service.TodoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class TodoController {
     }
 
     @PostMapping
-    List <ToDo> create(@RequestBody ToDo todo){
+    List <ToDo> create(@RequestBody @Valid ToDo todo){
         return todoService.create(todo);
     }
     @GetMapping
