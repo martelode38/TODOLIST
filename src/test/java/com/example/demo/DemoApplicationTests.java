@@ -52,7 +52,88 @@ class DemoApplicationTests {
     }
 
     @Test
-    void testUpdateSuccess(){
+    void testUpdateTodoSuccess(){
+        var todo = new ToDo("todo 1", "desc todo 1", false, 1);
 
+        var response = webTestClient.post()
+                .uri("/todos")
+                .bodyValue(todo)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ToDo.class).returnResult();
+
+        Long createId = response.getResponseBody().get(0).getId();
+
+        var todoAtualizado = new ToDo("todo atualizado", "desc atualizada", true, 2);
+
+        webTestClient.put()
+                .uri("/todos/{id}", createId)
+                .bodyValue(todoAtualizado)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].name").isEqualTo(todoAtualizado.getName())
+                .jsonPath("$[0].description").isEqualTo(todoAtualizado.getDescription())
+                .jsonPath("$[0].completed").isEqualTo(todoAtualizado.isCompleted())
+                .jsonPath("$[0].priority").isEqualTo(todoAtualizado.getPriority());
     }
+
+    @Test
+    void testUpdateTodoFailed(){
+
+        var todo = new ToDo("todo 1", "desc todo 1", false, 1);
+
+        var response = webTestClient.post()
+                .uri("/todos")
+                .bodyValue(todo)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ToDo.class).returnResult();
+
+        Long createId = response.getResponseBody().get(0).getId();
+
+        var todoAtualizado = new ToDo("", "", false, 1);
+
+        webTestClient.put()
+                .uri("/todos/{id}", createId)
+                .bodyValue(todoAtualizado)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void testDeleteTodoSuccess(){
+        var todo = new ToDo("nome", "descrição", true, 1);
+
+        var response = webTestClient.post()
+                .uri("/todos")
+                .bodyValue(todo)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(ToDo.class)
+                .returnResult();
+
+        Long createId = response.getResponseBody().get(0).getId();
+
+        webTestClient.delete()
+                .uri("/todos/{id}", createId)
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void testDeleteTodoFailed(){
+
+        var failedIdTest = 9999L;
+        webTestClient.delete()
+                .uri("/todos/{id}", failedIdTest)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+
 }
+
+

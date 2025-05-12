@@ -3,7 +3,9 @@ package com.example.demo.service;
 import com.example.demo.entities.ToDo;
 import com.example.demo.repository.TodoRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -44,6 +46,9 @@ public class TodoService {
     }
 
     public List<ToDo> delete(Long id){
+        ToDo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ToDo not found"));
+
         todoRepository.deleteById(id);
         return list();
     }
